@@ -14,6 +14,15 @@ export default class Main extends Component {
     repositoryError: false,
   }
 
+  componentDidMount = () => {
+    const repos = localStorage.getItem('repositories')
+    console.log(repos)
+    if (repos) {
+      const repositories = JSON.parse(repos)
+      this.setState({ repositories })
+    }
+  }
+
   handleAddRepository = async (e) => {
     e.preventDefault()
 
@@ -23,11 +32,13 @@ export default class Main extends Component {
       const { repositoryInput, repositories } = this.state
       const { data: repository } = await api.get(`/repos/${repositoryInput}`)
       repository.lastCommit = moment(repository.pushed_at).fromNow()
+      const newRepos = [...repositories, repository]
       this.setState({
-        repositories: [...repositories, repository],
+        repositories: newRepos,
         repositoryInput: '',
         repositoryError: false,
       })
+      localStorage.setItem('repositories', JSON.stringify(newRepos))
     } catch (err) {
       this.setState({ repositoryError: true })
     } finally {

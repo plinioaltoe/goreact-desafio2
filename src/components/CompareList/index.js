@@ -10,6 +10,7 @@ const CompareList = ({ repositories }) => (
           <img src={repository.owner.avatar_url} alt={repository.owner.login} />
           <strong>{repository.owner.name}</strong>
           <small>{repository.owner.login}</small>
+          <button onClick={repository.excluir}>Excluir</button>
         </header>
         <ul>
           <li>
