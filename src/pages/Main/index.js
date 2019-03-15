@@ -64,6 +64,7 @@ export default class Main extends Component {
     this.setState({
       repositories,
     })
+    localStorage.setItem('repositories', JSON.stringify(repositories))
     this.setState({ loading: false, repositoryRefresh: '' })
   }
 
@@ -81,7 +82,9 @@ export default class Main extends Component {
             value={repositoryInput}
             onChange={e => this.setState({ repositoryInput: e.target.value })}
           />
-          <button type="submit">{loading ? <i className="fa fa-spinner fa-pulse" /> : 'OK'}</button>
+          <button type="submit">
+            {loading && !repositoryRefresh ? <i className="fa fa-spinner fa-pulse" /> : 'OK'}
+          </button>
         </Form>
         <CompareList
           repositories={repositories}
