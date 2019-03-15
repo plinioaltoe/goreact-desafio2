@@ -2,15 +2,28 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Container, Repository } from './styles'
 
-const CompareList = ({ repositories }) => (
+const CompareList = ({
+  repositories, excluir, loading, refresh, repositoryRefresh,
+}) => (
   <Container>
     {repositories.map(repository => (
       <Repository key={repository.id}>
+        <div className="botao">
+          <button type="button" onClick={() => refresh(repository.id)}>
+            {loading && repositoryRefresh === repository.id ? (
+              <i className="fa fa-spinner fa-pulse" />
+            ) : (
+              <i className="fa fa-spinner" />
+            )}
+          </button>
+          <button type="button" onClick={() => excluir(repository.id)}>
+            <i className="fa fa-trash" />
+          </button>
+        </div>
         <header>
           <img src={repository.owner.avatar_url} alt={repository.owner.login} />
           <strong>{repository.owner.name}</strong>
           <small>{repository.owner.login}</small>
-          <button onClick={repository.excluir}>Excluir</button>
         </header>
         <ul>
           <li>
@@ -42,6 +55,10 @@ const CompareList = ({ repositories }) => (
 )
 
 CompareList.propTypes = {
+  repositoryRefresh: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
+  refresh: PropTypes.func.isRequired,
+  excluir: PropTypes.func.isRequired,
   repositories: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,

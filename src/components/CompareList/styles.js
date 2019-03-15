@@ -57,4 +57,26 @@ export const Repository = styled.div`
       background: #f5f5f5;
     }
   }
+
+  button:first-child {
+    width: 25px;
+    margin-right: 5px;
+    background: #63f5b8;
+    border: 0;
+    border-radius: 3px;
+  }
+
+  button:last-child {
+    width: 25px;
+    padding: 5px 8px;
+    background: #f23;
+    border: 0;
+    border-radius: 3px;
+  }
+
+  .botao {
+    display: flex;
+    padding: 5px;
+    justify-content: flex-end;
+  }
 `
