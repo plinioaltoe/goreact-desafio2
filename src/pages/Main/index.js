@@ -12,10 +12,11 @@ export default class Main extends Component {
     repositoryInput: '',
     repositories: [],
     repositoryError: false,
-    repositoryRefresh: -1,
+    repositoryRefresh: '',
   }
 
   componentDidMount = () => {
+    // localStorage.removeItem('repositories')
     const repos = localStorage.getItem('repositories')
     if (repos) {
       const repositories = JSON.parse(repos)
@@ -23,18 +24,20 @@ export default class Main extends Component {
     }
   }
 
-  getRepositoryData = repositoryInput => api.get(`/repos/${repositoryInput}`)
+  getRepositoryData = async (repositoryInput) => {
+    const { data: repository } = await api.get(`/repos/${repositoryInput}`)
+    repository.lastCommit = moment(repository.pushed_at).fromNow()
+    return repository
+  }
 
-  handleAddorRefreshRepository = async (e, id) => {
+  handleAddRepository = async (e) => {
     e.preventDefault()
-    this.setState({ loading: true, repositoryRefresh: id })
+    this.setState({ loading: true })
     try {
       const { repositoryInput, repositories } = this.state
-      const { data: repository } = await this.getRepositoryData(repositoryInput)
-      repository.lastCommit = moment(repository.pushed_at).fromNow()
-      let newRepos = []
-      if (id) newRepos = this.refreshRepo(id, repository)
-      else newRepos = [...repositories, repository]
+      console.log(repositoryInput)
+      const newRepos = [...repositories, await this.getRepositoryData(repositoryInput)]
+      console.log(newRepos)
       this.setState({
         repositories: newRepos,
         repositoryInput: '',
@@ -44,7 +47,7 @@ export default class Main extends Component {
     } catch (err) {
       this.setState({ repositoryError: true })
     } finally {
-      this.setState({ loading: false, repositoryRefresh: -1 })
+      this.setState({ loading: false })
     }
   }
 
@@ -55,11 +58,15 @@ export default class Main extends Component {
     localStorage.setItem('repositories', JSON.stringify(repositories))
   }
 
-  refreshRepo = (id, repository) => {
+  refreshRepo = async (fullName) => {
+    this.setState({ loading: true, repositoryRefresh: fullName })
     const { repositories } = this.state
-    const repoRefresh = repositories.findIndex(repo => repo.id === id)
-    repositories[repoRefresh] = repository
-    return repositories
+    const repoIndex = repositories.findIndex(repo => repo.full_name === fullName)
+    repositories[repoIndex] = await this.getRepositoryData(fullName)
+    this.setState({
+      repositories,
+    })
+    this.setState({ loading: false, repositoryRefresh: '' })
   }
 
   render() {
@@ -69,7 +76,7 @@ export default class Main extends Component {
     return (
       <Container>
         <img src={logo} alt="Github compare" />
-        <Form withError={repositoryError} onSubmit={this.handleAddorRefreshRepository}>
+        <Form withError={repositoryError} onSubmit={this.handleAddRepository}>
           <input
             type="text"
             placeholder="usuário/repositório"
@@ -82,7 +89,7 @@ export default class Main extends Component {
           repositories={repositories}
           excluir={this.excluir}
           loading={loading}
-          refresh={this.handleAddorRefreshRepository}
+          refresh={this.refreshRepo}
           repositoryRefresh={repositoryRefresh}
         />
       </Container>

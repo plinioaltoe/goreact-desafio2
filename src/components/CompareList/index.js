@@ -9,8 +9,8 @@ const CompareList = ({
     {repositories.map(repository => (
       <Repository key={repository.id}>
         <div className="botao">
-          <button type="button" onClick={() => refresh(repository.id)}>
-            {loading && repositoryRefresh === repository.id ? (
+          <button type="button" onClick={() => refresh(repository.full_name)}>
+            {loading && repositoryRefresh === repository.full_name ? (
               <i className="fa fa-spinner fa-pulse" />
             ) : (
               <i className="fa fa-spinner" />
@@ -54,8 +54,12 @@ const CompareList = ({
   </Container>
 )
 
+CompareList.defaultProps = {
+  repositoryRefresh: -1,
+}
+
 CompareList.propTypes = {
-  repositoryRefresh: PropTypes.number.isRequired,
+  repositoryRefresh: PropTypes.string,
   loading: PropTypes.bool.isRequired,
   refresh: PropTypes.func.isRequired,
   excluir: PropTypes.func.isRequired,
