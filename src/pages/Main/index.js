@@ -35,9 +35,7 @@ export default class Main extends Component {
     this.setState({ loading: true })
     try {
       const { repositoryInput, repositories } = this.state
-      console.log(repositoryInput)
       const newRepos = [...repositories, await this.getRepositoryData(repositoryInput)]
-      console.log(newRepos)
       this.setState({
         repositories: newRepos,
         repositoryInput: '',
